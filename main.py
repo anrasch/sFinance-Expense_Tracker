@@ -1,9 +1,20 @@
 import sys
 import os
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton
-from PyQt6.QtGui import QPalette, QColor
+from PyQt6.QtGui import QPalette, QColor, QIcon
 from sfinance import SFinanceApp
 from data import DataEvaluationApp
+
+# Funktion, um den Pfad zu Ressourcen zu finden, unabhängig davon, ob das Programm als Skript oder EXE ausgeführt wird
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller erstellt einen temporären Pfad zu den Ressourcen
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 # Create the data directory if it doesn't exist
 if not os.path.exists('data'):
@@ -16,6 +27,9 @@ class MainApp(QWidget):
 
         self.setWindowTitle("sFinance - Main Menu")
         self.setGeometry(100, 100, 300, 200)
+
+        # Setze das App-Icon, Pfad wird mit resource_path dynamisch gefunden
+        self.setWindowIcon(QIcon(resource_path('assets/logo.png')))
 
         # Set gray background
         self.setAutoFillBackground(True)

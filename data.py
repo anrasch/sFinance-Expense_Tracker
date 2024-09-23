@@ -1,13 +1,25 @@
+import os
 import sys
 import sqlite3
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QPushButton, QComboBox, QDateEdit, 
-                             QTableWidget, QTableWidgetItem, QApplication, QHBoxLayout)
+                             QTableWidget, QTableWidgetItem, QApplication)
 from PyQt6.QtCore import QDate
-from PyQt6.QtGui import QPalette, QColor
+from PyQt6.QtGui import QPalette, QColor, QIcon
 
 # Database connection
 conn = sqlite3.connect('data/expenses.db')
 cursor = conn.cursor()
+
+# Funktion, um den Pfad zu Ressourcen zu finden, unabhängig davon, ob das Programm als Skript oder EXE ausgeführt wird
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller erstellt einen temporären Pfad zu den Ressourcen
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 class DataEvaluationApp(QWidget):
     def __init__(self, main_window):
@@ -17,6 +29,9 @@ class DataEvaluationApp(QWidget):
 
         self.setWindowTitle("sFinance - Data Evaluation")
         self.setGeometry(100, 100, 600, 400)
+
+        # Setze das App-Icon, Pfad wird mit resource_path dynamisch gefunden
+        self.setWindowIcon(QIcon(resource_path('assets/logo.png')))
 
         # Set gray background
         self.setAutoFillBackground(True)
@@ -41,6 +56,31 @@ class DataEvaluationApp(QWidget):
         self.single_date_input = QDateEdit(self)
         self.single_date_input.setCalendarPopup(True)
         self.single_date_input.setDate(QDate.currentDate())
+        # Apply stylesheet to ensure black text in the calendar widget
+        self.single_date_input.setStyleSheet("""
+            QDateEdit {
+                color: black;
+                background-color: #f5f5f5;
+                border-radius: 10px;
+                padding: 8px;
+            }
+            QDateEdit::drop-down {
+                color: black;
+            }
+            QCalendarWidget QAbstractItemView {
+                background-color: white;
+                color: black;
+            }
+            QCalendarWidget QToolButton {
+                color: black;
+            }
+            QCalendarWidget QSpinBox {
+                color: black;
+            }
+            QCalendarWidget QMenu {
+                color: black;
+            }
+        """)
 
         self.month_label = QLabel("Month:")
         self.month_input = QDateEdit(self)
